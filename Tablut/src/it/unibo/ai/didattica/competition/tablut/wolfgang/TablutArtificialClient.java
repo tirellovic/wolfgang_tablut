@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Random;
 
 import aima.core.search.adversarial.AdversarialSearch;
+import aima.core.search.adversarial.AlphaBetaSearch;
 
 import com.google.gson.Gson;
 
 import it.unibo.ai.didattica.competition.tablut.domain.*;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
-import it.unibo.ai.didattica.competition.tablut.domain.StateTablut;
 import it.unibo.ai.didattica.competition.tablut.client.TablutClient;
 /**
  * 
@@ -186,8 +186,14 @@ public class TablutArtificialClient extends TablutClient {
     }
 
 	private Action searchForBestAction(GameAshtonTablut tablutGame, State state) {
-		AdversarialSearch<State, Action> search = new AlphaBetaSearch<>(tablutGame);
-		return null;
-	}
+    // Instantiate the AlphaBetaSearch object
+        AlphaBetaSearch<State, Action, State.Turn> search = AlphaBetaSearch.createFor(tablutGame);
+        
+        // Use AlphaBetaSearch to find the best action based on the current game state
+        Action bestAction = search.makeDecision(state);
+        
+        System.out.println("AlphaBetaSearch best action: " + bestAction);
+        return bestAction;
+}
 
 }
