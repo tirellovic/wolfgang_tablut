@@ -192,8 +192,7 @@ public class TablutArtificialClient extends TablutClient {
         // Use AlphaBetaSearch to find the best action based on the current game state
         Action bestAction = search.makeDecision(state);
         
-        System.out.println("AlphaBetaSearch best action: " + bestAction);
+        // System.out.println("AlphaBetaSearch best action: " + bestAction);
         return bestAction;
-}
-
+    }
 }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.FileHandler;
@@ -11,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 import it.unibo.ai.didattica.competition.tablut.exceptions.*;
 
 /**
@@ -21,7 +23,7 @@ import it.unibo.ai.didattica.competition.tablut.exceptions.*;
  * @author A. Piretti, Andrea Galassi
  *
  */
-public class GameAshtonTablut implements Game {
+public class GameAshtonTablut implements Game, Cloneable, aima.core.search.adversarial.Game<State, Action, State.Turn>{
 
 	/**
 	 * Number of repeated states that can occur before a draw
@@ -747,6 +749,120 @@ public class GameAshtonTablut implements Game {
 	@Override
 	public void endGame(State state) {
 		this.loggGame.fine("Stato:\n"+state.toString());
+	}
+
+	/*Methods that need to be implemented in order to use the AlphaBetaSearch strategy exposed by the aima lib
+	 */
+	@Override
+	public List<Action> getActions(State state) {
+		List<Action> actions = new ArrayList<>();
+		State.Turn currentPlayer = state.getTurn();
+
+		// Iterate over the board to find the current player's pieces
+		for (int row = 0; row < state.getBoard().length; row++) {
+			for (int col = 0; col < state.getBoard()[row].length; col++) {
+				State.Pawn pawn = state.getPawn(row, col);
+
+				// Check if the pawn belongs to the current player
+				if ((currentPlayer == State.Turn.WHITE && (pawn == State.Pawn.WHITE || pawn == State.Pawn.KING)) ||
+					(currentPlayer == State.Turn.BLACK && pawn == State.Pawn.BLACK)) {
+
+					// Generate valid moves in all four directions (up, down, left, right)
+					generateValidActionsForPawn(state, actions, row, col, currentPlayer);
+				}
+			}
+		}
+		return actions;
+	}
+
+	// Helper method to generate moves for a given pawn
+	private void generateValidActionsForPawn(State state, List<Action> actions, int row, int col, State.Turn player) {
+		try {
+			// Move in all four directions (up, down, left, right) until a boundary or an invalid move
+			for (int i = row - 1; i >= 0; i--) { // Up
+				Action action = new Action(state.getBox(row, col), state.getBox(i, col), player);
+				if (isValidAction(state, action)) actions.add(action);
+				else break; // Stop if the move is invalid or blocked
+			}
+			for (int i = row + 1; i < state.getBoard().length; i++) { // Down
+				Action action = new Action(state.getBox(row, col), state.getBox(i, col), player);
+				if (isValidAction(state, action)) actions.add(action);
+				else break;
+			}
+			for (int j = col - 1; j >= 0; j--) { // Left
+				Action action = new Action(state.getBox(row, col), state.getBox(row, j), player);
+				if (isValidAction(state, action)) actions.add(action);
+				else break;
+			}
+			for (int j = col + 1; j < state.getBoard()[0].length; j++) { // Right
+				Action action = new Action(state.getBox(row, col), state.getBox(row, j), player);
+				if (isValidAction(state, action)) actions.add(action);
+				else break;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private boolean isValidAction(State state, Action action) {
+		try {
+			checkMove(state, action); 
+			return true;
+		} catch (Exception e) {
+			return false; 
+		}
+	}
+
+	@Override
+	public State getInitialState() {
+		return new StateTablut();
+	}
+
+	@Override
+	public Turn getPlayer(State state) {
+		return state.getTurn();
+	}
+
+	@Override
+	public Turn[] getPlayers() {
+		return new State.Turn[]{State.Turn.WHITE, State.Turn.BLACK};
+	}
+
+	@Override
+	public State getResult(State state, Action action) {
+		State oldState = state.clone();
+		State newState = this.checkCaptureBlack(oldState, action);
+
+		if (state.getTurn().equals("W")){
+			newState = this.checkCaptureWhite(newState, action);
+		} 
+		else{
+			newState = this.checkCaptureBlack(newState, action);
+		}
+
+		return newState;
+	}
+
+	@Override
+	public double getUtility(State state, State.Turn player) {
+		State.Turn turn = state.getTurn();
+
+		if (turn == State.Turn.WHITEWIN) {
+			return (player == State.Turn.WHITE) ? 1.0 : -1.0; // WHITE wins
+		} else if (turn == State.Turn.BLACKWIN) {
+			return (player == State.Turn.BLACK) ? 1.0 : -1.0; // BLACK wins
+		} else if (turn == State.Turn.DRAW) {
+			return 0.0; 
+		}
+
+		// For non-terminal states, return 0 as a default utility value
+		return 0.0;
+	}
+
+	@Override
+	public boolean isTerminal(State state) {
+		Turn turn = state.getTurn();
+		return turn.equals(State.Turn.BLACKWIN) || turn.equals(State.Turn.WHITEWIN) || turn.equals(State.Turn.DRAW);
 	}
 
 
