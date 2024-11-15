@@ -12,6 +12,7 @@ import java.util.Random;
 
 import aima.core.search.adversarial.AdversarialSearch;
 import aima.core.search.adversarial.AlphaBetaSearch;
+import aima.core.search.adversarial.IterativeDeepeningAlphaBetaSearch;
 
 import com.google.gson.Gson;
 
@@ -186,13 +187,12 @@ public class TablutArtificialClient extends TablutClient {
     }
 
 	private Action searchForBestAction(GameAshtonTablut tablutGame, State state) {
-    // Instantiate the AlphaBetaSearch object
-        AlphaBetaSearch<State, Action, State.Turn> search = AlphaBetaSearch.createFor(tablutGame);
-        
-        // Use AlphaBetaSearch to find the best action based on the current game state
-        Action bestAction = search.makeDecision(state);
-        
-        // System.out.println("AlphaBetaSearch best action: " + bestAction);
-        return bestAction;
+		double utilMin = -1.0; // Minimum utility value (example)
+		double utilMax = 1.0;  // Maximum utility value (example)
+		int time = 10;         // Search time in seconds (example)
+
+		IterativeDeepeningAlphaBetaSearch<State, Action, State.Turn> search = 
+			new IterativeDeepeningAlphaBetaSearch<>(tablutGame, utilMin, utilMax, time);
+		return search.makeDecision(state);
     }
 }

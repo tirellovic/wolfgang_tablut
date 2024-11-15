@@ -846,17 +846,80 @@ public class GameAshtonTablut implements Game, Cloneable, aima.core.search.adver
 	@Override
 	public double getUtility(State state, State.Turn player) {
 		State.Turn turn = state.getTurn();
-
+	
+		// Check if the game is in a terminal state
 		if (turn == State.Turn.WHITEWIN) {
-			return (player == State.Turn.WHITE) ? 1.0 : -1.0; // WHITE wins
+			return (player == State.Turn.WHITE) ? 1.0 : -1.0;
 		} else if (turn == State.Turn.BLACKWIN) {
-			return (player == State.Turn.BLACK) ? 1.0 : -1.0; // BLACK wins
+			return (player == State.Turn.BLACK) ? 1.0 : -1.0;
 		} else if (turn == State.Turn.DRAW) {
-			return 0.0; 
+			return 0.0;
 		}
-
-		// For non-terminal states, return 0 as a default utility value
-		return 0.0;
+	
+		// If the game is not in a terminal state, return an intermediate heuristic value
+		return evaluateNonTerminalState(state, player);
+	}
+	
+	// Helper method to evaluate non-terminal states (heuristic evaluation)
+	private double evaluateNonTerminalState(State state, State.Turn player) {
+		double utility = 0.0;
+	
+		// Example heuristic 1: Distance of the king to edges (only useful for WHITE)
+		if (player == State.Turn.WHITE) {
+			utility += evaluateKingProximityToEdge(state);
+		}
+		
+		// Example heuristic 2: Number of black pawns around the king (for BLACK's strategy)
+		if (player == State.Turn.BLACK) {
+			utility += evaluateBlackControlAroundKing(state);
+		}
+	
+		return utility;
+	}
+	
+	// Heuristic for WHITE: Evaluate the king's distance to the board's edges
+	private double evaluateKingProximityToEdge(State state) {
+		int kingRow = -1, kingCol = -1;
+		for (int i = 0; i < state.getBoard().length; i++) {
+			for (int j = 0; j < state.getBoard()[i].length; j++) {
+				if (state.getPawn(i, j) == State.Pawn.KING) {
+					kingRow = i;
+					kingCol = j;
+					break;
+				}
+			}
+		}
+	
+		int distanceToEdge = Math.min(Math.min(kingRow, 8 - kingRow), Math.min(kingCol, 8 - kingCol));
+		return 1.0 / (distanceToEdge + 1); // Inverse of distance, so closer means higher utility
+	}
+	
+	// Heuristic for BLACK: Evaluate number of black pawns near the king
+	private double evaluateBlackControlAroundKing(State state) {
+		int kingRow = -1, kingCol = -1;
+		for (int i = 0; i < state.getBoard().length; i++) {
+			for (int j = 0; j < state.getBoard()[i].length; j++) {
+				if (state.getPawn(i, j) == State.Pawn.KING) {
+					kingRow = i;
+					kingCol = j;
+					break;
+				}
+			}
+		}
+	
+		int blackPawnsAroundKing = 0;
+		int[][] directions = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
+		for (int[] dir : directions) {
+			int newRow = kingRow + dir[0];
+			int newCol = kingCol + dir[1];
+			if (newRow >= 0 && newRow < state.getBoard().length && newCol >= 0 && newCol < state.getBoard()[0].length) {
+				if (state.getPawn(newRow, newCol) == State.Pawn.BLACK) {
+					blackPawnsAroundKing++;
+				}
+			}
+		}
+	
+		return blackPawnsAroundKing * 0.25; // Each black pawn near king adds to utility for BLACK
 	}
 
 	@Override
