@@ -780,26 +780,40 @@ public class GameAshtonTablut implements Game, Cloneable, aima.core.search.adver
 	// Helper method to generate moves for a given pawn
 	private void generateValidActionsForPawn(State state, List<Action> actions, int row, int col, State.Turn player) {
 		try {
+			State.Turn currentPlayer = state.getTurn();
 			// Move in all four directions (up, down, left, right) until a boundary or an invalid move
 			for (int i = row - 1; i >= 0; i--) { // Up
+				// if ((currentPlayer == State.Turn.WHITE && state.getPawn(i, col) == State.Pawn.WHITE)
+				// || (currentPlayer == State.Turn.BLACK && state.getPawn(i, col) == State.Pawn.BLACK))
+				// 	break;
 				Action action = new Action(state.getBox(row, col), state.getBox(i, col), player);
 				if (isValidAction(state, action)) actions.add(action);
 				else break; // Stop if the move is invalid or blocked
 			}
 			for (int i = row + 1; i < state.getBoard().length; i++) { // Down
+				// if ((currentPlayer == State.Turn.WHITE && state.getPawn(i, col) == State.Pawn.WHITE)
+				// || (currentPlayer == State.Turn.BLACK && state.getPawn(i, col) == State.Pawn.BLACK))
+				// 	break;
 				Action action = new Action(state.getBox(row, col), state.getBox(i, col), player);
 				if (isValidAction(state, action)) actions.add(action);
 				else break;
 			}
 			for (int j = col - 1; j >= 0; j--) { // Left
+				// if ((currentPlayer == State.Turn.WHITE && state.getPawn(row, j) == State.Pawn.WHITE)
+				// || (currentPlayer == State.Turn.BLACK && state.getPawn(row, j) == State.Pawn.BLACK))
+				// 	break;
 				Action action = new Action(state.getBox(row, col), state.getBox(row, j), player);
 				if (isValidAction(state, action)) actions.add(action);
 				else break;
 			}
 			for (int j = col + 1; j < state.getBoard()[0].length; j++) { // Right
+				// if ((currentPlayer == State.Turn.WHITE && state.getPawn(row, j) == State.Pawn.WHITE)
+				// || (currentPlayer == State.Turn.BLACK && state.getPawn(row, j) == State.Pawn.BLACK))
+				// 	break;
 				Action action = new Action(state.getBox(row, col), state.getBox(row, j), player);
 				if (isValidAction(state, action)) actions.add(action);
 				else break;
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -808,7 +822,7 @@ public class GameAshtonTablut implements Game, Cloneable, aima.core.search.adver
 
 	private boolean isValidAction(State state, Action action) {
 		try {
-			checkMove(state, action); 
+			checkMove(state.clone(), action); 
 			return true;
 		} catch (Exception e) {
 			return false; 
