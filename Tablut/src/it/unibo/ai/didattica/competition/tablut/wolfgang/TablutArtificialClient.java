@@ -1,23 +1,9 @@
 package it.unibo.ai.didattica.competition.tablut.wolfgang;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 import java.net.UnknownHostException;
-import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import aima.core.search.adversarial.AdversarialSearch;
-import aima.core.search.adversarial.AlphaBetaSearch;
-import aima.core.search.adversarial.IterativeDeepeningAlphaBetaSearch;
-
-import com.google.gson.Gson;
-
 import it.unibo.ai.didattica.competition.tablut.domain.*;
-import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
+import it.unibo.ai.didattica.competition.tablut.algorithms.IterativeDeepeningPVS;
 import it.unibo.ai.didattica.competition.tablut.client.TablutClient;
 /**
  * 
@@ -160,6 +146,7 @@ public class TablutArtificialClient extends TablutClient {
 
                 }
 
+
                 // if is turn of oppenent (WHITE)
                 else if (state.getTurn().equals(StateTablut.Turn.WHITE)) {
                     System.out.println("Waiting for your opponent move...\n");
@@ -186,13 +173,15 @@ public class TablutArtificialClient extends TablutClient {
         }
     }
 
-	private Action searchForBestAction(GameAshtonTablut tablutGame, State state) {
-		double utilMin = -1.0; // Minimum utility value (example)
-		double utilMax = 1.0;  // Maximum utility value (example)
-		int time = 10;         // Search time in seconds (example)
+    private Action searchForBestAction(GameAshtonTablut tablutGame, State state) {
+        double utilMin = -1.0; 
+        double utilMax = 1.0;  
+        int time = 15; // Tempo limite in secondi
 
-		IterativeDeepeningAlphaBetaSearch<State, Action, State.Turn> search = 
-			new IterativeDeepeningAlphaBetaSearch<>(tablutGame, utilMin, utilMax, time);
-		return search.makeDecision(state);
+        // Usa la classe IterativeDeepeningPVS al posto di IterativeDeepeningAlphaBetaSearch
+        IterativeDeepeningPVS search = new IterativeDeepeningPVS(tablutGame, utilMin, utilMax, time);
+
+        return search.makeDecision(state);
     }
+
 }

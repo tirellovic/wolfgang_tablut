@@ -14,6 +14,8 @@ import java.util.logging.SimpleFormatter;
 
 import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 import it.unibo.ai.didattica.competition.tablut.exceptions.*;
+import it.unibo.ai.didattica.competition.tablut.heuristic.BlackHeuristics;
+import it.unibo.ai.didattica.competition.tablut.heuristic.WhiteHeuristics;
 
 /**
  * 
@@ -847,20 +849,29 @@ public class GameAshtonTablut implements Game, Cloneable, aima.core.search.adver
 	public double getUtility(State state, State.Turn player) {
 		State.Turn turn = state.getTurn();
 	
-		// Check if the game is in a terminal state
+		// Controlla se il gioco è in uno stato terminale
 		if (turn == State.Turn.WHITEWIN) {
-			return (player == State.Turn.WHITE) ? 1.0 : -1.0;
+			return (player == State.Turn.WHITE) ? 1000.0 : -1000.0;
 		} else if (turn == State.Turn.BLACKWIN) {
-			return (player == State.Turn.BLACK) ? 1.0 : -1.0;
+			return (player == State.Turn.BLACK) ? 1000.0 : -1000.0;
 		} else if (turn == State.Turn.DRAW) {
 			return 0.0;
 		}
 	
-		// If the game is not in a terminal state, return an intermediate heuristic value
-		return evaluateNonTerminalState(state, player);
+		// Se il gioco non è in uno stato terminale, utilizza le euristiche
+		double utility;
+		if (player == State.Turn.WHITE) {
+			WhiteHeuristics whiteHeuristics = new WhiteHeuristics(state);
+			utility = whiteHeuristics.evaluateState();
+		} else { // BLACK
+			BlackHeuristics blackHeuristics = new BlackHeuristics(state);
+			utility = blackHeuristics.evaluateState();
+		}
+	
+		return utility;
 	}
 	
-	// Helper method to evaluate non-terminal states (heuristic evaluation)
+	/*// Helper method to evaluate non-terminal states (heuristic evaluation)
 	private double evaluateNonTerminalState(State state, State.Turn player) {
 		double utility = 0.0;
 	
@@ -921,7 +932,7 @@ public class GameAshtonTablut implements Game, Cloneable, aima.core.search.adver
 	
 		return blackPawnsAroundKing * 0.25; // Each black pawn near king adds to utility for BLACK
 	}
-
+*/
 	@Override
 	public boolean isTerminal(State state) {
 		Turn turn = state.getTurn();
