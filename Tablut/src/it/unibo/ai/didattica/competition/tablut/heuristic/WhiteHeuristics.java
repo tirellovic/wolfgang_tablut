@@ -28,6 +28,7 @@ public class WhiteHeuristics extends BaseHeuristics{
         utility += WEIGHT_WHITE_PAWN_POSITION * evaluateWhitePawnPosition();
 
         // Valutazione delle pedine nere mangiate
+        //FIXME: isn't it always == 0?
         int numBlackPawns = state.getNumberOf(Pawn.BLACK);
         utility += WEIGHT_BLACK_PAWN_EATEN * (countBlackPawns(state) - numBlackPawns) / countBlackPawns(state);
 
@@ -133,9 +134,6 @@ public class WhiteHeuristics extends BaseHeuristics{
             }
         }
         return count;
-    }
-    
-    
-    
+    }    
 }
 

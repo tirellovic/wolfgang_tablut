@@ -176,7 +176,7 @@ public class TablutArtificialClient extends TablutClient {
     private Action searchForBestAction(GameAshtonTablut tablutGame, State state) {
         double utilMin = -1.0; 
         double utilMax = 1.0;  
-        int time = 15; // Tempo limite in secondi
+        int time = 30; // Tempo limite in secondi
 
         // Usa la classe IterativeDeepeningPVS al posto di IterativeDeepeningAlphaBetaSearch
         IterativeDeepeningPVS search = new IterativeDeepeningPVS(tablutGame, utilMin, utilMax, time);

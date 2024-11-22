@@ -3,33 +3,62 @@ package it.unibo.ai.didattica.competition.tablut.algorithms;
 import aima.core.search.adversarial.IterativeDeepeningAlphaBetaSearch;
 import aima.core.search.adversarial.Game;
 import it.unibo.ai.didattica.competition.tablut.domain.State;
+import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
+import it.unibo.ai.didattica.competition.tablut.heuristic.*;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class IterativeDeepeningPVS extends IterativeDeepeningAlphaBetaSearch<State, Action, State.Turn> {
 
-    private final long timeLimitMillis; // Tempo massimo per la ricerca
-
     public IterativeDeepeningPVS(Game<State, Action, State.Turn> game, double utilMin, double utilMax, int timeInSeconds) {
         super(game, utilMin, utilMax, timeInSeconds);
-        this.timeLimitMillis = timeInSeconds * 1000L; // Convertire in millisecondi
     }
 
     @Override
+    public List<Action> orderActions(State state, List<Action> actions, Turn player, int depth) {
+        List<EvaluatedAction> actionsWithEval = new ArrayList<>();
+
+        for (Action action : actions) {
+            State resultingState = game.getResult(state.clone(), action);
+            double evaluation = eval(resultingState, player);
+
+            actionsWithEval.add(new EvaluatedAction(action, evaluation));
+        }
+
+        // Step 2: Sort actions based on their evaluation (descending order for maximizing player)
+        actionsWithEval.sort(Comparator.comparingDouble(EvaluatedAction::getEvaluation).reversed());
+
+        return actionsWithEval.stream()
+                .map(EvaluatedAction::getAction)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    protected double eval(State state, Turn player) {
+        return this.game.getUtility(state, player);
+    }
+
+    /* @Override
     public Action makeDecision(State state) {
         long startTime = System.currentTimeMillis();
         long endTime = startTime + timeLimitMillis;
 
         Action bestAction = null;
+        // Orders all the possibile future actions retrieved using min max, uses the getAction that we created
+        //the order should ensure that the most promising action is analyzed as the first one 
         List<Action> actions = orderActions(state, game.getActions(state), game.getPlayer(state), 0);
 
-        for (currDepthLimit = 1; System.currentTimeMillis() < endTime; currDepthLimit++) {
+        // Iterativedeepening with setting the time limit
+        for (currDepthLimit = 2; System.currentTimeMillis() < endTime; currDepthLimit++) {
             for (Action action : actions) {
                 double value = maxValue(game.getResult(state, action), game.getPlayer(state), Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 1);
 
                 if (System.currentTimeMillis() >= endTime) {
-                    break; // Interrompere se il tempo è scaduto
+                    break; // the search stops once the time limit is reached
                 }
 
                 if (bestAction == null || value > eval(game.getResult(state, bestAction), game.getPlayer(state))) {
@@ -46,7 +75,7 @@ public class IterativeDeepeningPVS extends IterativeDeepeningAlphaBetaSearch<Sta
 
     @Override
     public double maxValue(State state, State.Turn player, double alpha, double beta, int depth) {
-        if (game.isTerminal(state) || depth >= currDepthLimit || System.currentTimeMillis() >= timeLimitMillis) {
+        if (game.isTerminal(state) || depth >= currDepthLimit) {
             return eval(state, player);
         }
 
@@ -110,5 +139,5 @@ public class IterativeDeepeningPVS extends IterativeDeepeningAlphaBetaSearch<Sta
         }
 
         return value;
-    }
+    } */
 }

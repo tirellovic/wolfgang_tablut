@@ -781,6 +781,7 @@ public class GameAshtonTablut implements Game, Cloneable, aima.core.search.adver
 	private void generateValidActionsForPawn(State state, List<Action> actions, int row, int col, State.Turn player) {
 		try {
 			// Move in all four directions (up, down, left, right) until a boundary or an invalid move
+			// TODO: split the 4 in different parallel executions
 			for (int i = row - 1; i >= 0; i--) { 
 				Action action = new Action(state.getBox(row, col), state.getBox(i, col), player);
 				if (isValidAction(state, action)) actions.add(action);
