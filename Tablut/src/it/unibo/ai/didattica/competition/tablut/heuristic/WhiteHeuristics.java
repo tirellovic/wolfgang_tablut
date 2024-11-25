@@ -1,4 +1,9 @@
 package it.unibo.ai.didattica.competition.tablut.heuristic;
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
 import it.unibo.ai.didattica.competition.tablut.domain.State;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Pawn;
 
@@ -12,7 +17,19 @@ public class WhiteHeuristics extends BaseHeuristics{
 
     private State.Pawn[][] board;
     private int[] kingPosition;
-
+    private static final Logger heuristicLogger = Logger.getLogger(WhiteHeuristics.class.getName());
+    static {
+        try {
+            FileHandler fileHandler = new FileHandler("logs/white_heuristics.log", true);
+            fileHandler.setFormatter(new SimpleFormatter());
+            heuristicLogger.addHandler(fileHandler);
+            heuristicLogger.setUseParentHandlers(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Errore nella configurazione del logger per BlackHeuristics", e);
+        }
+    }
+        
     public WhiteHeuristics(State state) {
         super(state);
     }
@@ -44,7 +61,8 @@ public class WhiteHeuristics extends BaseHeuristics{
         } else if (state.getTurn().equals(State.Turn.BLACKWIN)) {
             utility -= 100.0; // Penalità per la vittoria del nero
         }
-
+        heuristicLogger.info(
+                ", Utility: " + utility);
         return utility;
     }
 
