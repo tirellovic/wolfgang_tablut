@@ -26,6 +26,9 @@ import it.unibo.ai.didattica.competition.tablut.heuristic.WhiteHeuristics;
  *
  */
 public class GameAshtonTablut implements Game, Cloneable, aima.core.search.adversarial.Game<State, Action, State.Turn>{
+	public static final int INITIAL_NUM_WHITE = 8; // without considering the king
+	public static final int INITIAL_NUM_BLACK = 16;
+	public static final int MAX_ESCAPES_NUM = 16;
 
 	/**
 	 * Number of repeated states that can occur before a draw
@@ -834,7 +837,15 @@ public class GameAshtonTablut implements Game, Cloneable, aima.core.search.adver
 	@Override
 	public State getResult(State state, Action action) {
 		State oldState = state.clone();
-		State newState = this.checkCaptureBlack(oldState, action);
+		State newState = null;
+
+		try{
+			newState = this.checkMove(oldState, action);
+		}
+		catch(Exception e){
+			System.out.println(e);
+		}
+			
 
 		if (state.getTurn().equals("W")){
 			newState = this.checkCaptureWhite(newState, action);

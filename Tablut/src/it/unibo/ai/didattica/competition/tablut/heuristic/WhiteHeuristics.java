@@ -4,19 +4,18 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut;
 import it.unibo.ai.didattica.competition.tablut.domain.State;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Pawn;
 
 public class WhiteHeuristics extends BaseHeuristics{
     
 
-    private static final double WEIGHT_WHITE_PAWN_POSITION = 10.0;
-    private static final double WEIGHT_BLACK_PAWN_EATEN = 20.0;
-    private static final double WEIGHT_KING_ESCAPE = 30.0;
-    private static final double WEIGHT_KING_PROTECTION = 15.0;
+    private static final double WEIGHT_WHITE_PAWN_POSITION = 8.0;
+    private static final double WEIGHT_BLACK_PAWN_EATEN = 12.0;
+    private static final double WEIGHT_KING_ESCAPE = 32.0;
+    private static final double WEIGHT_KING_PROTECTION = 23.0;
 
-    private State.Pawn[][] board;
-    private int[] kingPosition;
     private static final Logger heuristicLogger = Logger.getLogger(WhiteHeuristics.class.getName());
     static {
         try {
@@ -36,21 +35,17 @@ public class WhiteHeuristics extends BaseHeuristics{
 
     @Override
     public double evaluateState() {
-        this.board = state.getBoard();
-        this.kingPosition = getKingPosition();
-
         double utility = 0.0;
 
         // Valutazione delle pedine bianche in posizioni strategiche
         utility += WEIGHT_WHITE_PAWN_POSITION * evaluateWhitePawnPosition();
 
-        // Valutazione delle pedine nere mangiate
-        //FIXME: isn't it always == 0?
+        // Valutazione delle pedine nere 
         int numBlackPawns = state.getNumberOf(Pawn.BLACK);
-        utility += WEIGHT_BLACK_PAWN_EATEN * (countBlackPawns(state) - numBlackPawns) / countBlackPawns(state);
+        utility += WEIGHT_BLACK_PAWN_EATEN * (GameAshtonTablut.INITIAL_NUM_BLACK - numBlackPawns) / GameAshtonTablut.INITIAL_NUM_BLACK;
 
         // Valutazione delle vie di fuga del re
-        utility += WEIGHT_KING_ESCAPE * countKingEscapeWays();
+        utility += WEIGHT_KING_ESCAPE * (countKingEscapeWays() / GameAshtonTablut.MAX_ESCAPES_NUM);
 
         // Valutazione della protezione del re
         utility += WEIGHT_KING_PROTECTION * evaluateKingProtection();
@@ -100,6 +95,7 @@ public class WhiteHeuristics extends BaseHeuristics{
         return escapeWays;
     }
 
+    // the king is also pro
     private double evaluateKingProtection() {
         int[][] directions = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
         double protectionScore = 0.0;
@@ -117,17 +113,6 @@ public class WhiteHeuristics extends BaseHeuristics{
         return protectionScore / 2.0; // Normalizzazione
     }
 
-    private int[] getKingPosition() {
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                if (board[i][j].equals(Pawn.KING)) {
-                    return new int[] {i, j};
-                }
-            }
-        }
-        return new int[] {4, 4}; // Posizione iniziale del re
-    }
-    
     public int countWhitePawns(State state) {
         int count = 0;
         for (int i = 0; i < state.getBoard().length; i++) {
