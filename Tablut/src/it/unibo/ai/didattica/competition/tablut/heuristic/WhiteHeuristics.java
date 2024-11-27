@@ -12,9 +12,9 @@ public class WhiteHeuristics extends BaseHeuristics{
     
 
     private static final double WEIGHT_WHITE_PAWN_POSITION = 8.0;
-    private static final double WEIGHT_BLACK_PAWN_EATEN = 12.0;
-    private static final double WEIGHT_KING_ESCAPE = 32.0;
-    private static final double WEIGHT_KING_PROTECTION = 23.0;
+    private static final double WEIGHT_BLACK_PAWN_EATEN = 10.0;
+    private static final double WEIGHT_KING_ESCAPE = 21.0;
+    private static final double WEIGHT_KING_PROTECTION = 36.0;
 
     private static final Logger heuristicLogger = Logger.getLogger(WhiteHeuristics.class.getName());
     static {
@@ -38,7 +38,8 @@ public class WhiteHeuristics extends BaseHeuristics{
         double utility = 0.0;
 
         // Valutazione delle pedine bianche in posizioni strategiche
-        utility += WEIGHT_WHITE_PAWN_POSITION * evaluateWhitePawnPosition();
+        //utility += WEIGHT_WHITE_PAWN_POSITION * evaluateWhitePawnPosition();
+        utility += WEIGHT_WHITE_PAWN_POSITION * state.getNumberOf(Pawn.WHITE);
 
         // Valutazione delle pedine nere 
         int numBlackPawns = state.getNumberOf(Pawn.BLACK);

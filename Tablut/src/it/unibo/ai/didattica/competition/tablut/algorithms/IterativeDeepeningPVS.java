@@ -23,7 +23,9 @@ public class IterativeDeepeningPVS extends IterativeDeepeningAlphaBetaSearch<Sta
         List<EvaluatedAction> actionsWithEval = new ArrayList<>();
 
         for (Action action : actions) {
-            State resultingState = game.getResult(state.clone(), action);
+            //no get result ma solo applicazione dell'azione
+            // se arrivo qui so già che le azioni che sto toccando sono valide e quindi le devo solo applicare
+            State resultingState = game.getResult(state.clone(), action);   //cambia in movePawn
             double evaluation = eval(resultingState, player);
 
             actionsWithEval.add(new EvaluatedAction(action, evaluation));
