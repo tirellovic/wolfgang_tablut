@@ -11,10 +11,11 @@ import it.unibo.ai.didattica.competition.tablut.domain.State.Pawn;
 public class WhiteHeuristics extends BaseHeuristics{
     
 
-    private static final double WEIGHT_WHITE_PAWN_POSITION = 8.0;
-    private static final double WEIGHT_BLACK_PAWN_EATEN = 10.0;
-    private static final double WEIGHT_KING_ESCAPE = 21.0;
-    private static final double WEIGHT_KING_PROTECTION = 36.0;
+    private static final double WEIGHT_WHITE_PAWN_POSITION = 10.0;
+    private static final double WEIGHT_WHITE_PAWN = 18.0;
+    private static final double WEIGHT_BLACK_PAWN_EATEN = 9.0;
+    private static final double WEIGHT_KING_ESCAPE = 15.0;
+    private static final double WEIGHT_KING_PROTECTION = 20.0;
 
     private static final Logger heuristicLogger = Logger.getLogger(WhiteHeuristics.class.getName());
     static {
@@ -38,8 +39,10 @@ public class WhiteHeuristics extends BaseHeuristics{
         double utility = 0.0;
 
         // Valutazione delle pedine bianche in posizioni strategiche
-        //utility += WEIGHT_WHITE_PAWN_POSITION * evaluateWhitePawnPosition();
-        utility += WEIGHT_WHITE_PAWN_POSITION * state.getNumberOf(Pawn.WHITE);
+        double fracWhitePawn = state.getNumberOf(Pawn.WHITE) / GameAshtonTablut.INITIAL_NUM_WHITE;
+        utility += WEIGHT_WHITE_PAWN * fracWhitePawn;
+
+        utility += WEIGHT_WHITE_PAWN_POSITION * evaluateWhitePawnPosition();
 
         // Valutazione delle pedine nere 
         int numBlackPawns = state.getNumberOf(Pawn.BLACK);
@@ -96,48 +99,25 @@ public class WhiteHeuristics extends BaseHeuristics{
         return escapeWays;
     }
 
-    // the king is also pro
     private double evaluateKingProtection() {
+
         int[][] directions = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
         double protectionScore = 0.0;
+        double threatScore = 0.0;
 
         for (int[] dir : directions) {
             int newRow = kingPosition[0] + dir[0];
             int newCol = kingPosition[1] + dir[1];
             if (newRow >= 0 && newRow < board.length && newCol >= 0 && newCol < board[0].length) {
                 if (board[newRow][newCol].equals(Pawn.WHITE)) {
-                    protectionScore += 0.5; // Ogni pedina bianca vicina aggiunge al punteggio
+                    protectionScore += 1.0; // Reward for nearby White pawns
+                } else if (board[newRow][newCol].equals(Pawn.BLACK)) {
+                    threatScore += 1.0; // Penalize for nearby Black pawns
                 }
             }
         }
 
-        return protectionScore / 2.0; // Normalizzazione
-    }
-
-    public int countWhitePawns(State state) {
-        int count = 0;
-        for (int i = 0; i < state.getBoard().length; i++) {
-            for (int j = 0; j < state.getBoard()[i].length; j++) {
-                if (state.getPawn(i, j).equalsPawn(State.Pawn.WHITE.toString()) ||
-                    state.getPawn(i, j).equalsPawn(State.Pawn.KING.toString())) {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-    
-    // Calcola il numero di pedine nere
-    public int countBlackPawns(State state) {
-        int count = 0;
-        for (int i = 0; i < state.getBoard().length; i++) {
-            for (int j = 0; j < state.getBoard()[i].length; j++) {
-                if (state.getPawn(i, j).equalsPawn(State.Pawn.BLACK.toString())) {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }    
+        return (protectionScore - threatScore) / 4.0; 
+    }   
 }
 

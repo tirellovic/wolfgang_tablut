@@ -40,8 +40,8 @@ public class BlackHeuristics extends BaseHeuristics{
         double utility = 0.0;
 
         // evaluation of black pawn remaining
-        double numBlackPawns = state.getNumberOf(Pawn.BLACK) / GameAshtonTablut.INITIAL_NUM_BLACK;
-        utility += numBlackPawns * WEIGHT_BLACK_PAWN;
+        double fracBlackPawn = state.getNumberOf(Pawn.BLACK) / GameAshtonTablut.INITIAL_NUM_BLACK;
+        utility += fracBlackPawn * WEIGHT_BLACK_PAWN;
 
         // Evaluation of eaten white pawns
         int numWhitePawns = state.getNumberOf(Pawn.WHITE);
