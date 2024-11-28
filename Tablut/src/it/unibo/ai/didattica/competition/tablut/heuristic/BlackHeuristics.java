@@ -66,7 +66,7 @@ public class BlackHeuristics extends BaseHeuristics{
             }
         }
 
-        return proximityScore / 4.0; // Normalizzare il punteggio
+        return proximityScore / 4.0;
     }
 }
 

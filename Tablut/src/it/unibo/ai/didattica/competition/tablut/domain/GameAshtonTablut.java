@@ -608,7 +608,7 @@ public class GameAshtonTablut implements Game, Cloneable, aima.core.search.adver
 		this.loggGame.fine("Stato:\n"+state.toString());
 	}
 
-	/*Methods that need to be implemented in order to use the AlphaBetaSearch strategy exposed by the aima lib
+	/*Methods that need to be implemented in order to use the IterativeDeepeningAlphaBetaSearch strategy exposed by the aima lib
 	 */
 	@Override
 	public List<Action> getActions(State state) {
@@ -632,11 +632,12 @@ public class GameAshtonTablut implements Game, Cloneable, aima.core.search.adver
 		return actions;
 	}
 
-	// Helper method to generate moves for a given pawn
+	/**
+	 * Helper method to generate possibile available moves for a given pawn
+	 * */
 	private void generateValidActionsForPawn(State state, List<Action> actions, int row, int col, State.Turn player) {
 		try {
 			// Move in all four directions (up, down, left, right) until a boundary or an invalid move
-			// TODO: split the 4 in different parallel executions
 			for (int i = row - 1; i >= 0; i--) { 
 				Action action = new Action(state.getBox(row, col), state.getBox(i, col), player);
 				if (checkAction(state, action)) actions.add(action);
@@ -662,6 +663,12 @@ public class GameAshtonTablut implements Game, Cloneable, aima.core.search.adver
 		}
 	}
 
+	/**
+	 * Checks if the action is valid if performed on the passed state
+	 * @param state
+	 * @param a
+	 * @return true if the action is valid, false otherwise
+	 */
 	private boolean checkAction(State state, Action a){
 		try {
 			isValidAction(state, a);
@@ -672,6 +679,9 @@ public class GameAshtonTablut implements Game, Cloneable, aima.core.search.adver
 		return false;
 	}
 
+	/**
+	 * Raises an exception if the action is not a valid one
+	 */
 	private void isValidAction(State state, Action a) 
 	throws BoardException, ActionException, StopException, PawnException, DiagonalException, ClimbingException,
 			ThroneException, OccupitedException, ClimbingCitadelException, CitadelException
@@ -870,7 +880,7 @@ public class GameAshtonTablut implements Game, Cloneable, aima.core.search.adver
 	public double getUtility(State state, State.Turn player) {
 		State.Turn turn = state.getTurn();
 	
-		// Controlla se il gioco è in uno stato terminale
+		// Check if the game is in a terminal state
 		if (turn == State.Turn.WHITEWIN) {
 			return (player == State.Turn.WHITE) ? 1000.0 : -1000.0;
 		} else if (turn == State.Turn.BLACKWIN) {
@@ -879,12 +889,12 @@ public class GameAshtonTablut implements Game, Cloneable, aima.core.search.adver
 			return 0.0;
 		}
 	
-		// Se il gioco non è in uno stato terminale, utilizza le euristiche
+		// If the game is not in a terminal state, use the heuristics
 		double utility;
 		if (player == State.Turn.WHITE) {
 			WhiteHeuristics whiteHeuristics = new WhiteHeuristics(state);
 			utility = whiteHeuristics.evaluateState();
-		} else { // BLACK
+		} else { 
 			BlackHeuristics blackHeuristics = new BlackHeuristics(state);
 			utility = blackHeuristics.evaluateState();
 		}

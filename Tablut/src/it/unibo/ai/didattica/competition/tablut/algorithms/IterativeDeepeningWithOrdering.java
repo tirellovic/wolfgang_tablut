@@ -12,9 +12,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class IterativeDeepeningPVS extends IterativeDeepeningAlphaBetaSearch<State, Action, State.Turn> {
+/**
+ * Extention of the base class IterativeDeepeningAlphaBetaSearch in which the method orderActions effectively 
+ * reorders the actions.
+ */
+public class IterativeDeepeningWithOrdering extends IterativeDeepeningAlphaBetaSearch<State, Action, State.Turn> {
 
-    public IterativeDeepeningPVS(Game<State, Action, State.Turn> game, double utilMin, double utilMax, int timeInSeconds) {
+    public IterativeDeepeningWithOrdering(Game<State, Action, State.Turn> game, double utilMin, double utilMax, int timeInSeconds) {
         super(game, utilMin, utilMax, timeInSeconds);
     }
 
@@ -23,15 +27,12 @@ public class IterativeDeepeningPVS extends IterativeDeepeningAlphaBetaSearch<Sta
         List<EvaluatedAction> actionsWithEval = new ArrayList<>();
 
         for (Action action : actions) {
-            //no get result ma solo applicazione dell'azione
-            // se arrivo qui so già che le azioni che sto toccando sono valide e quindi le devo solo applicare
-            State resultingState = game.getResult(state.clone(), action);   //cambia in movePawn
+            State resultingState = game.getResult(state.clone(), action);   
             double evaluation = eval(resultingState, player);
 
             actionsWithEval.add(new EvaluatedAction(action, evaluation));
         }
 
-        // Step 2: Sort actions based on their evaluation (descending order for maximizing player)
         actionsWithEval.sort(Comparator.comparingDouble(EvaluatedAction::getEvaluation).reversed());
 
         return actionsWithEval.stream()

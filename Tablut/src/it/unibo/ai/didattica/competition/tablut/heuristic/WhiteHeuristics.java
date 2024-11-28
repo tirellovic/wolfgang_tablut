@@ -10,12 +10,12 @@ import it.unibo.ai.didattica.competition.tablut.domain.State.Pawn;
 
 public class WhiteHeuristics extends BaseHeuristics{
     
-
+    // total sum of the weights is 75
     private static final double WEIGHT_WHITE_PAWN_POSITION = 10.0;
     private static final double WEIGHT_WHITE_PAWN = 18.0;
     private static final double WEIGHT_BLACK_PAWN_EATEN = 9.0;
     private static final double WEIGHT_KING_ESCAPE = 15.0;
-    private static final double WEIGHT_KING_PROTECTION = 20.0;
+    private static final double WEIGHT_KING_PROTECTION = 23.0;
 
     private static final Logger heuristicLogger = Logger.getLogger(WhiteHeuristics.class.getName());
     static {
@@ -38,27 +38,26 @@ public class WhiteHeuristics extends BaseHeuristics{
     public double evaluateState() {
         double utility = 0.0;
 
-        // Valutazione delle pedine bianche in posizioni strategiche
+        // Evaluation of white pawns in strategic positions
         double fracWhitePawn = state.getNumberOf(Pawn.WHITE) / GameAshtonTablut.INITIAL_NUM_WHITE;
         utility += WEIGHT_WHITE_PAWN * fracWhitePawn;
 
         utility += WEIGHT_WHITE_PAWN_POSITION * evaluateWhitePawnPosition();
 
-        // Valutazione delle pedine nere 
         int numBlackPawns = state.getNumberOf(Pawn.BLACK);
         utility += WEIGHT_BLACK_PAWN_EATEN * (GameAshtonTablut.INITIAL_NUM_BLACK - numBlackPawns) / GameAshtonTablut.INITIAL_NUM_BLACK;
 
-        // Valutazione delle vie di fuga del re
+        // Evaluation of the King's escape routes
         utility += WEIGHT_KING_ESCAPE * (countKingEscapeWays() / GameAshtonTablut.MAX_ESCAPES_NUM);
 
-        // Valutazione della protezione del re
+        // Evaluation of King's protection
         utility += WEIGHT_KING_PROTECTION * evaluateKingProtection();
 
-        // Stati terminali
+        // Terminal states
         if (state.getTurn().equals(State.Turn.WHITEWIN)) {
-            utility += 100.0; // Premio per la vittoria del bianco
+            utility += 100.0; 
         } else if (state.getTurn().equals(State.Turn.BLACKWIN)) {
-            utility -= 100.0; // Penalità per la vittoria del nero
+            utility -= 100.0;
         }
         heuristicLogger.info(
                 ", Utility: " + utility);
@@ -110,9 +109,9 @@ public class WhiteHeuristics extends BaseHeuristics{
             int newCol = kingPosition[1] + dir[1];
             if (newRow >= 0 && newRow < board.length && newCol >= 0 && newCol < board[0].length) {
                 if (board[newRow][newCol].equals(Pawn.WHITE)) {
-                    protectionScore += 1.0; // Reward for nearby White pawns
+                    protectionScore += 1.0;
                 } else if (board[newRow][newCol].equals(Pawn.BLACK)) {
-                    threatScore += 1.0; // Penalize for nearby Black pawns
+                    threatScore += 1.0; 
                 }
             }
         }

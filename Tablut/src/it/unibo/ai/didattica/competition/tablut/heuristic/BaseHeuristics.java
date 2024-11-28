@@ -14,7 +14,6 @@ public abstract class BaseHeuristics{
     }
 
     /**
-     * Metodo astratto per calcolare il valore euristico di uno stato.
      * Abstract method that computes the heuristic value of a state.
      */
     public abstract double evaluateState();

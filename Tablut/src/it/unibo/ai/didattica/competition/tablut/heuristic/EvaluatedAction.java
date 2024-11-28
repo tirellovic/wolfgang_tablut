@@ -1,7 +1,9 @@
 package it.unibo.ai.didattica.competition.tablut.heuristic;
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
 
-// Helper class to associate actions with their evaluations
+/**
+ * Helper class to associate actions with their evaluations
+ */ 
 public class EvaluatedAction {
     private final Action action;
     private final double evaluation;
