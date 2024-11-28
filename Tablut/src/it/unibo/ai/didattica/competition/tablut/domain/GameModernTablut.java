@@ -152,7 +152,8 @@ public class GameModernTablut implements Game {
 		return state;
 	}
 
-	private State movePawn(State state, Action a) {
+	@Override
+	public State movePawn(State state, Action a) {
 		State.Pawn pawn = state.getPawn(a.getRowFrom(), a.getColumnFrom());
 		State.Pawn[][] newBoard = state.getBoard();
 		// State newState = new State();
@@ -248,8 +249,8 @@ public class GameModernTablut implements Game {
 						|| state.getPawn(a.getRowTo(), a.getColumnTo() + 1).equalsPawn("K"))
 				&& (state.getPawn(a.getRowTo(), a.getColumnTo() + 2).equalsPawn("B")
 						|| state.getPawn(a.getRowTo(), a.getColumnTo() + 2).equalsPawn("T"))) {
-			// nero-re-trono N.B. No indexOutOfBoundException perchè se il re si
-			// trovasse sul bordo il giocatore bianco avrebbe già vinto
+			// nero-re-trono N.B. No indexOutOfBoundException perchï¿½ se il re si
+			// trovasse sul bordo il giocatore bianco avrebbe giï¿½ vinto
 			if (state.getPawn(a.getRowTo(), a.getColumnTo() + 1).equalsPawn("K")
 					&& state.getPawn(a.getRowTo(), a.getColumnTo() + 2).equalsPawn("T")) {
 				// ho circondato il re?

@@ -3,13 +3,10 @@ package it.unibo.ai.didattica.competition.tablut.wolfgang;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import it.unibo.ai.didattica.competition.tablut.domain.*;
-import it.unibo.ai.didattica.competition.tablut.algorithms.IterativeDeepeningPVS;
+import it.unibo.ai.didattica.competition.tablut.algorithms.IterativeDeepeningWithOrdering;
 import it.unibo.ai.didattica.competition.tablut.client.TablutClient;
-/**
- * 
- * @author A. Piretti, Andrea Galassi
- *
- */
+
+
 public class TablutArtificialClient extends TablutClient {
 	private int timeout;
 	private String serverIp;
@@ -20,7 +17,6 @@ public class TablutArtificialClient extends TablutClient {
 		this.serverIp = ipAddress;
 
 	}
-
 
 	public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException {
 		String role = "";
@@ -176,10 +172,9 @@ public class TablutArtificialClient extends TablutClient {
     private Action searchForBestAction(GameAshtonTablut tablutGame, State state) {
         double utilMin = -1.0; 
         double utilMax = 1.0;  
-        int time = 15; // Tempo limite in secondi
+        int time = 30; // Tempo limite in secondi
 
-        // Usa la classe IterativeDeepeningPVS al posto di IterativeDeepeningAlphaBetaSearch
-        IterativeDeepeningPVS search = new IterativeDeepeningPVS(tablutGame, utilMin, utilMax, time);
+        IterativeDeepeningWithOrdering search = new IterativeDeepeningWithOrdering(tablutGame, utilMin, utilMax, time);
 
         return search.makeDecision(state);
     }
