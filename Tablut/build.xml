@@ -141,6 +141,10 @@
     </java>
 </target>
 
+<target name="jar" description="Create JAR file">
+    <mkdir dir="dist"/>
+    <jar destfile="dist/tablut-player.jar" basedir="build"/>
+</target>
 
 
 </project>
