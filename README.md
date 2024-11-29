@@ -1,64 +1,33 @@
-# TablutCompetition
+# Tablut Competition 2024/2025
 Software for the Tablut Students Competition
 
-## Installation on Ubuntu/Debian 
+## Requirements
 
-From console, run these commands to install JDK 8 e ANT:
+From console, run these commands to install JDK 8:
 
 ```
 sudo apt update
 sudo apt install openjdk-8-jdk -y
-sudo apt install ant -y
 ```
 
 Now, clone the project repository:
 
 ```
-git clone https://github.com/AGalassi/TablutCompetition.git
+git clone https://github.com/tirellovic/wolfgang_tablut.git
 ```
 
-## Run the Server without Eclipse
+## Run the Server
 
-The easiest way is to utilize the ANT configuration script from console.
-Go into the project folder (the folder with the `build.xml` file):
+To start the game, move in `jars` directory and run the Server with this command:
 ```
-cd TablutCompetition/Tablut
-```
-
-Compile the project:
-
-```
-ant clean
-ant compile
+java -jar Server.jar
 ```
 
-The compiled project is in  the `build` folder.
-Run the server with:
+To run the game as either black or white artificial player:
 
 ```
-ant server
+./runmyplayer white 60 localhost
 ```
-
-Check the behaviour using the random players in two different console windows:
-
 ```
-ant randomwhite
-
-ant randomblack
+./runmyplayer black 60 localhost
 ```
-
-At this point, a window with the game state should appear.
-
-To be able to run other classes, change the `build.xml` file and re-compile everything
-
-
-## Replay function
-
-Replay a game using the logfile
-
-Example:
-
-```
-java -jar .\server.jar -g -R .\logs\PLAYER1_vs_PLAYER2_1652711382324_gameLog.txt
-```
-
