@@ -1,8 +1,21 @@
 # Tablut Competition 2024/2025
-Software for the Tablut Students Competition
+Software for the Tablut Students Competition.
+
 ## Our strategy
 
-BLABLABLA
+This project implements an artificial player for the game Tablut, designed to make intelligent, efficient decisions while playing as either side (Black or White). The AI is based on the Iterative Deepening Search algorithm combined with Alpha-Beta Pruning (exposed by the AIMA library) to reduce the search space and improve performance.
+
+**Black Player**
+
+Evaluates the state by prioritizing the survival of black pawns, the capture of white pawns, and the king’s proximity to black pawns, aiming to restrict the king’s mobility and ensure a quick victory.
+
+**White Player**
+
+Considers the strategic positioning of white pawns, the number of captured black pawns, protection for the king, and escape routes to maximize the chances of victory for the white side.
+
+**Action Ordering**
+
+A new custom class extends the base search class (*IterativeDeepeningAlphaBetaSearch*) to implement action ordering based on the evaluation of moves using the defined heuristics. This ensures that the most promising actions are explored earlier in the Alpha-Beta pruning process, improving both computational efficiency and strategic depth.
 
 ## Requirements
 
