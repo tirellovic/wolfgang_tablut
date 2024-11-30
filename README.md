@@ -29,10 +29,10 @@ java -jar Server.jar
 To run the game as either black or white artificial player:
 
 ```
-./runmyplayer white 60 localhost
+./runmyplayer WHITE 60 localhost
 ```
 ```
-./runmyplayer black 60 localhost
+./runmyplayer BLACK 60 localhost
 ```
 
 In alternative, you can also compile and run the project with `ant`:
