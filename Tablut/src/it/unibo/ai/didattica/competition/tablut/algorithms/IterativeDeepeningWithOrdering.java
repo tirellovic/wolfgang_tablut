@@ -20,6 +20,7 @@ public class IterativeDeepeningWithOrdering extends IterativeDeepeningAlphaBetaS
 
     public IterativeDeepeningWithOrdering(Game<State, Action, State.Turn> game, double utilMin, double utilMax, int timeInSeconds) {
         super(game, utilMin, utilMax, timeInSeconds);
+        this.setLogEnabled(true);
     }
 
     @Override
@@ -38,10 +39,5 @@ public class IterativeDeepeningWithOrdering extends IterativeDeepeningAlphaBetaS
         return actionsWithEval.stream()
                 .map(EvaluatedAction::getAction)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    protected double eval(State state, Turn player) {
-        return this.game.getUtility(state, player);
     }
 }
